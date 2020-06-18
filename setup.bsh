@@ -1,0 +1,159 @@
+#/bin/bash
+
+#This script will setup openacc_gi-3.0. This involves compiling the clang tools 
+#(which takes a while) then compiling the openacc_gi-3.0 jar (which is quite quick!).
+#
+#Once complete you may run ./run.bsh to run the tool
+
+#You need wget, tar, unzip, cmake and a CPP toolchain to use this script
+
+# $1 == the build type. This is if you want to do development of the clang tools. The clang_tools
+#  will not build if this argument is specified. The following are acceptable:
+#  Unix Makefiles               	= Generates standard UNIX makefiles.
+#  Ninja                        	= Generates build.ninja files.
+#  Xcode                        	= Generate Xcode project files.
+#  CodeBlocks - Ninja           	= Generates CodeBlocks project files.
+#  CodeBlocks - Unix Makefiles  	= Generates CodeBlocks project files.
+#  CodeLite - Ninja             	= Generates CodeLite project files.
+#  CodeLite - Unix Makefiles    	= Generates CodeLite project files.
+#  Sublime Text 2 - Ninja       	= Generates Sublime Text 2 project files.
+#  Sublime Text 2 - Unix Makefiles  	= Generates Sublime Text 2 project files.
+#  Kate - Ninja                 	= Generates Kate project files.
+#  Kate - Unix Makefiles        	= Generates Kate project files.
+#  Eclipse CDT4 - Ninja         	= Generates Eclipse CDT 4.0 project files.
+#  Eclipse CDT4 - Unix Makefiles	= Generates Eclipse CDT 4.0 project files.
+#  KDevelop3                    	= Generates KDevelop 3 project files.
+#  KDevelop3 - Unix Makefiles   	= Generates KDevelop 3 project files.
+#
+# E.g. ./build Xcode
+#
+# If nothing is specified then the clang tools will build from the Make files
+
+#Clang and LLVM versions
+LLVM_VER="3.7.0"
+CLANG_VER="3.7.0"
+
+#Clang and LLVM source folders
+ROOT_FOLDER=`pwd`
+TOOLS_ROOT_FOLDER="${ROOT_FOLDER}/clang_tools"
+LLVM_SRC="${TOOLS_ROOT_FOLDER}/llvm"
+CLANG_SRC="${LLVM_SRC}/tools/clang"
+LLVM_OUTPUT_DIR="${TOOLS_ROOT_FOLDER}/llvm-build"
+
+#Tarball names
+LLVM_SRC_FILE="llvm-${LLVM_VER}.src.tar.xz"
+CLANG_SRC_FILE="cfe-${CLANG_VER}.src.tar.xz"
+
+#Tarball websites
+LLVM_SRC_ADDR="http://llvm.org/releases/${LLVM_VER}/${LLVM_SRC_FILE}"
+CLANG_SRC_ADDR="http://llvm.org/releases/${CLANG_VER}/${CLANG_SRC_FILE}"
+
+#Our source names
+OUR_SRC="${TOOLS_ROOT_FOLDER}/src"
+OUR_INC="${TOOLS_ROOT_FOLDER}/include"
+OUR_TESTS="${TOOLS_ROOT_FOLDER}/test"
+
+#loop-analyser
+LOOP_ANALYSER_NAME="loop-analyser"
+LOOP_ANALYSER_SRC="${OUR_SRC}/${LOOP_ANALYSER_NAME}"
+LOOP_ANALYSER_SRC_INSERTION="${CLANG_SRC}/tools/extra"
+
+#data-insertion-finder
+DATA_INSERTION_FINDER_NAME="data-insertion-finder"
+DATA_INSERTION_FINDER_SRC="${OUR_SRC}/${DATA_INSERTION_FINDER_NAME}"
+DATA_INSERTION_FINDER_SRC_INSERTION="${CLANG_SRC}/tools/extra"
+
+#data-directive-analysis
+DATA_DIRECTIVE_ANALYSER_NAME="data-directive-analyser"
+DATA_DIRECTIVE_ANALYSER_SRC="${OUR_SRC}/${DATA_DIRECTIVE_ANALYSER_NAME}"
+DATA_DIRECTIVE_ANALYSER_SRC_INSERTION="${CLANG_SRC}/tools/extra"
+
+#VariableScopeAnalysis Library
+LIBRARY_NAME="VariableScopeAnalysis"
+LIBRARY_SRC="${OUR_SRC}/${LIBRARY_NAME}"
+LIBRARY_INC="${OUR_INC}/${LIBRARY_NAME}"
+LIBRARY_SRC_INSERTION="${CLANG_SRC}/lib"
+LIBRARY_INC_INSERTION="${CLANG_SRC}/include/clang"
+
+#VariableScopeAnalysis Library Test
+TEST_NAME="VariableScopeAnalysis"
+TEST_DIR="${OUR_TESTS}/${TEST_NAME}"
+TEST_INSERTION_DIR="${CLANG_SRC}/unittests"
+
+#Delete anything already there
+rm -rf "${LLVM_SRC}" "${CLANG_SRC}" "${LLVM_OUTPUT_DIR}" "${LLVM_SRC_FILE}" "${CLANG_SRC_FILE}"
+
+#Download and extract the tarballs if necessisary
+if [ ! -d "${LLVM_SRC}" ]; then
+    if [ ! -f "${LLVM_SRC_FILE}" ]; then
+        wget "${LLVM_SRC_ADDR}"
+    fi
+    mkdir "${LLVM_SRC}"
+    tar -Jxf "llvm-${LLVM_VER}.src.tar.xz" -C "${LLVM_SRC}" --strip 1
+    rm "llvm-${LLVM_VER}.src.tar.xz"
+fi
+
+if [ ! -d "${CLANG_SRC}" ]; then
+    if [ ! -f "${CLANG_SRC_FILE}" ]; then
+        wget "${CLANG_SRC_ADDR}"
+    fi
+    mkdir "${CLANG_SRC}"
+    tar -Jxf "cfe-${CLANG_VER}.src.tar.xz" -C "${CLANG_SRC}" --strip 1 #extract clang tarball to llvm/tools folder
+    rm "cfe-${CLANG_VER}.src.tar.xz"
+fi
+
+#Add loop-analyser
+mkdir -p $LOOP_ANALYSER_SRC_INSERTION
+ln -s $LOOP_ANALYSER_SRC "${LOOP_ANALYSER_SRC_INSERTION}/"
+echo "add_subdirectory(${LOOP_ANALYSER_NAME})" >> "${LOOP_ANALYSER_SRC_INSERTION}/CMakeLists.txt"
+
+#Add data-insertion-finder
+mkdir -p $DATA_INSERTION_FINDER_SRC_INSERTION
+ln -s $DATA_INSERTION_FINDER_SRC "${DATA_INSERTION_FINDER_SRC_INSERTION}/"
+echo "add_subdirectory(${DATA_INSERTION_FINDER_NAME})" >> "${DATA_INSERTION_FINDER_SRC_INSERTION}/CMakeLists.txt"
+
+#Add data-directive-analysis
+mkdir -p $DATA_DIRECTIVE_ANALYSER_SRC_INSERTION
+ln -s $DATA_DIRECTIVE_ANALYSER_SRC "${DATA_DIRECTIVE_ANALYSER_SRC_INSERTION}/"
+echo "add_subdirectory(${DATA_DIRECTIVE_ANALYSER_NAME})" >> "${DATA_DIRECTIVE_ANALYSER_SRC_INSERTION}/CMakeLists.txt"
+
+#Add the library
+mkdir -p $LIBRARY_SRC_INSERTION
+ln -s $LIBRARY_SRC "${LIBRARY_SRC_INSERTION}/"
+echo "add_subdirectory(${LIBRARY_NAME})" >> "${LIBRARY_SRC_INSERTION}/CMakeLists.txt"
+
+mkdir -p "${LIBRARY_INC_INSERTION}/"
+ln -s "${LIBRARY_INC}" "${LIBRARY_INC_INSERTION}/"
+echo "add_subdirectory(${LIBRARY_NAME})" >> "${LIBRARY_INC_INSERTION}/CMakeLists.txt"
+
+#Add library test
+mkdir -p "${TEST_INSERTION_DIR}"
+ln -s "${TEST_DIR}" "${TEST_INSERTION_DIR}/"
+echo "add_subdirectory(${TEST_NAME})" >> "${TEST_INSERTION_DIR}/CMakeLists.txt"
+
+#Create output folder for LLVM if not already created
+if [ ! -d "${LLVM_OUTPUT_DIR}" ]; then
+    mkdir ${LLVM_OUTPUT_DIR}
+fi
+
+
+#Create setup with cmake if not already created
+cd ${LLVM_OUTPUT_DIR}
+
+if [ $# -gt 0 ]; then
+  cmake -G $1 -DCMAKE_BUILD_TYPE=debug -DBUILD_SHARED_LIBS=ON ${LLVM_SRC}
+elif [ ! -f "Makefile" ]; then
+  cmake -DCMAKE_BUILD_TYPE=debug -DBUILD_SHARED_LIBS=ON ${LLVM_SRC}
+fi 
+
+if [ $# -eq 0 ];then
+  make ${LOOP_ANALYSER_NAME} ${DATA_DIRECTIVE_ANALYSER_NAME} ${DATA_INSERTION_FINDER_NAME} 
+fi
+
+cd ${ROOT_FOLDER}
+
+#Build the openacc_gi-3.0
+if [ $# -eq 0 ]; then
+  cd openacc_gi
+  mvn install
+fi

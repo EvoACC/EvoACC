@@ -1,0 +1,53 @@
+#!/bin/bash
+
+DIR=$(dirname $0)
+
+status=0
+{
+  if [ ! -z "$1" ]; then
+    (cd / && patch -p0) <$1
+    status=$?
+  fi
+} &>/dev/null
+
+if [ "$status" != "0" ]; then
+  echo -1
+  exit 0
+fi
+
+
+{
+  #Weirdly enough, the compiler sometimes gets confused and stalls, I don't know why but it happens
+  timeout 60 make -C "${DIR}/NPB3.3-SER-C/EP" CC=pgcc CLASS=A TA=nvidia,cc60 
+  status=$?
+} &> /dev/null
+
+if [ "$status" == "0" ]; then
+  temp_file=$(mktemp /tmp/XXXX)
+  timeout 600 "${DIR}/NPB3.3-SER-C/EP/ep.A.x" &>$temp_file
+  status=$?
+  
+  if [ "$status" != "0" ]; then
+    echo -1
+  else
+    time_val=$(cat $temp_file | awk '($1=="Time" && $2=="in" && $3=="seconds" && $4=="="){print $5}')
+    if [ "$time_val" == "" ]; then
+      echo -1
+    else
+      verified=$(cat $temp_file | awk '($1=="Verification" && $2=="="){print $3}')
+      if [ "$verified" == "SUCCESSFUL" ]; then
+        echo $(echo "100.0/$time_val" | bc -l)
+      else
+        echo -1
+      fi
+    fi
+  fi
+else
+  echo -1
+fi
+
+{
+  if [ ! -z "$1" ]; then
+    (cd / && patch -R -p0) <$1
+  fi
+} &>/dev/null

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+prompt_confirm() {
+  while true; do
+    read -r -n 1 -p "${1:-Continue?} [y/n]: " REPLY
+    case $REPLY in
+      [yY]) echo ; return 0 ;;
+      [nN]) echo ; return 1 ;;
+      *) printf " \033[31m %s \n\033[0m" "invalid input"
+    esac 
+  done  
+}
+
+PWD=`pwd`
+NUM_EVALUATIONS=700
+EXPERIMENT_DIR="${PWD}/openacc-gi-experiment"
+SETUP_DIR="${EXPERIMENT_DIR}/setup"
+COMMON_INCLUDES="-I${SETUP_DIR}/NPB3.3-SER-C/common -I${PWD}/clang_tools/llvm/tools/clang/lib/Headers -I/opt/pgi/linux86-64/19.10/include"
+
+
+prompt_confirm "Do you want to run the batch of experiments?" || exit 0
+
+output_dir="output"
+mkdir ${output_dir}
+
+#Run the experiments
+i=0
+while [ "${i}" -lt "5" ]; do
+  source "${PWD}/run.bsh" -f"${SETUP_DIR}/bt_data_training.csv" -x"${SETUP_DIR}/BT_fitness_function_training.bsh" -e $NUM_EVALUATIONS -s 111 -lC -I"${SETUP_DIR}/NPB3.3-SER-C/BT" -i -L${output_dir}/bt_output_${i}.dat ${COMMON_INCLUDES}
+  source "${PWD}/run.bsh" -f"${SETUP_DIR}/cg_data_training.csv" -x"${SETUP_DIR}/CG_fitness_function_training.bsh" -e $NUM_EVALUATIONS -s 222 -lC -I"${SETUP_DIR}/NPB3.3-SER-C/CG" -i -L${output_dir}/cg_output_${i}.dat ${COMMON_INCLUDES}
+  source "${PWD}/run.bsh" -f"${SETUP_DIR}/ep_data_training.csv" -x"${SETUP_DIR}/EP_fitness_function_training.bsh" -e $NUM_EVALUATIONS -s 333 -lC -I"${SETUP_DIR}/NPB3.3-SER-C/EP" -i -L${output_dir}/ep_output_${i}.dat ${COMMON_INCLUDES}
+  source "${PWD}/run.bsh" -f"${SETUP_DIR}/ft_data_training.csv" -x"${SETUP_DIR}/FT_fitness_function_training.bsh" -e $NUM_EVALUATIONS -s 444 -lC -I"${SETUP_DIR}/NPB3.3-SER-C/FT" -i -L${output_dir}/ft_output_${i}.dat ${COMMON_INCLUDES}
+  source "${PWD}/run.bsh" -f"${SETUP_DIR}/lu_data_training.csv" -x"${SETUP_DIR}/LU_fitness_function_training.bsh" -e $NUM_EVALUATIONS -s 555 -lC -I"${SETUP_DIR}/NPB3.3-SER-C/LU" -i -L${output_dir}/lu_output_${i}.dat ${COMMON_INCLUDES}
+  source "${PWD}/run.bsh" -f"${SETUP_DIR}/mg_data_training.csv" -x"${SETUP_DIR}/MG_fitness_function_training.bsh" -e $NUM_EVALUATIONS -s 666 -lC -I"${SETUP_DIR}/NPB3.3-SER-C/MG" -i -L${output_dir}/mg_output_${i}.dat ${COMMON_INCLUDES}
+  source "${PWD}/run.bsh" -f"${SETUP_DIR}/sp_data_training.csv" -x"${SETUP_DIR}/SP_fitness_function_training.bsh" -e $NUM_EVALUATIONS -s 777 -lC -I"${SETUP_DIR}/NPB3.3-SER-C/SP" -i -L${output_dir}/sp_output_${i}.dat ${COMMON_INCLUDES}
+  i=$(( i + 1 ))
+done

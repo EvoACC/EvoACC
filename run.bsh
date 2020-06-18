@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#Please input run as follows:
+# ./run.bsh -f <csv_file> -x <fitness_function_script> -e <number_evaluations> -l <language>[-s <seed>] [-I <include_file> ... -I <another_include file>]
+#
+# <csv_file> : A CSV file that specifies the targeted loops. In format of '<file>,<loop_line_number>'
+# <fitness_function_script>: An executable that will return the fitness. Negative fitness is a break of hard constraints, otherwise closer to zero equals better
+# <number_evaluations>: The number of evaluations (Due to some stochastic behaviour, this number may be slightly smaller or bigger than the actual evaluations done. Actual evaluatoions will be printed to STDOUT upon completion of execution
+# <language> : The target language. Either 'C' or 'CPP'
+# <include_file> : Files that should be included to get these files to compile. Note: C/CPP standard library is not included by default
+#
+#
+
+OPENACC_GI_EXEC="mvn exec:java -fopenacc_gi/pom.xml"
+LOOP_ANALYSER_PATH="clang_tools/llvm-build/bin/loop-analyser"
+DATA_INSERTION_FINDER_PATH="clang_tools/llvm-build/bin/data-insertion-finder"
+DATA_DIRECTIVE_ANALYSER_PATH="clang_tools/llvm-build/bin/data-directive-analyser"
+ARGUMENTS="-d${DATA_INSERTION_FINDER_PATH} -D${DATA_DIRECTIVE_ANALYSER_PATH} -a${LOOP_ANALYSER_PATH} $@"
+
+export MAVEN_OPTS="-ea" #enable assertions
+time ${OPENACC_GI_EXEC} -Dexec.args="${ARGUMENTS}"

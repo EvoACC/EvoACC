@@ -1,0 +1,6 @@
+#!/bin/bash
+
+PWD=`pwd`
+SYSTEM_SPECIFIC_INCLUDES="/opt/pgi/linux86-64/17.4/include /usr/include/c++/4.8.4"
+
+"${PWD}/../llvm-build/bin/data-insertion-finder" "${PWD}/BT/rhs.c" "${PWD}/test3present.csv" C "${PWD}/BT" "${PWD}/common" ${SYSTEM_SPECIFIC_INCLUDES} 

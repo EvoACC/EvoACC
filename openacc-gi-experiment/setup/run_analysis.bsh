@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo "seconds" >bt_optimal_time.dat
+echo "seconds" >cg_optimal_time.dat
+echo "seconds" >ep_optimal_time.dat
+echo "seconds" >ft_optimal_time.dat
+echo "seconds" >mg_optimal_time.dat
+echo "seconds" >sp_optimal_time.dat
+
+i=0;
+while [ "$i" -lt "100" ]; do
+
+  ./BT_fitness_function.bsh bt_optimal.patch >>bt_optimal_time.dat
+
+  ./CG_fitness_function.bsh cg_optimal.patch >>cg_optimal_time.dat
+
+  ./EP_fitness_function.bsh ep_optimal.patch >>ep_optimal_time.dat
+  
+  ./FT_fitness_function.bsh ft_optimal.patch >>ft_optimal_time.dat
+
+  ./MG_fitness_function.bsh mg_optimal.patch >>mg_optimal_time.dat
+ 
+  ./SP_fitness_function.bsh sp_optimal.patch >>sp_optimal_time.dat
+  
+  i=$(( $i+1 ))
+done

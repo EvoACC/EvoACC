@@ -1,0 +1,50 @@
+diff --git a/ArrayInference/writeExpressions.cpp b/ArrayInference/writeExpressions.cpp
+index 523b001..88ebc06 100644
+--- a/ArrayInference/writeExpressions.cpp
++++ b/ArrayInference/writeExpressions.cpp
+@@ -421,6 +421,14 @@ void WriteExpressions::regionIdentifyCoalescing (Region *R) {
+   // the data transference pragma.
+   int line = st->getStartRegionLoops(R).first;
+   int lineEnd = st->getEndRegionLoops(R).first + 1;
++
++for (auto SR = R->begin(), SRE = R->end(); SR != SRE; ++SR)
++      regionIdentifyCoalescing(&(**SR));
++
++writeComputation(line, lineEnd, R);
++
++return;
++
+   if (!isSafeMemoryCoalescing(R) || !st->isSafetlyRegionLoops(R)) {
+     for (auto SR = R->begin(), SRE = R->end(); SR != SRE; ++SR)
+       regionIdentifyCoalescing(&(**SR));
+diff --git a/CanParallelize/CanParallelize.cpp b/CanParallelize/CanParallelize.cpp
+index be14bc3..a5c2b3c 100644
+--- a/CanParallelize/CanParallelize.cpp
++++ b/CanParallelize/CanParallelize.cpp
+@@ -18,7 +18,7 @@ using namespace lge;
+ void CanParallelize::visit(Loop *L) {  
+   LoopCounter++;
+  
+-  if (ParLoops->canParallelize(L)){
++  if (true){
+     OutFile << std::to_string(L->getStartLoc().getLine()) << ";";
+     Parallel=true;
+   }
+diff --git a/build.sh b/build.sh
+old mode 100644
+new mode 100755
+diff --git a/run.sh b/run.sh
+old mode 100644
+new mode 100755
+index d0f2c6f..59b2729
+--- a/run.sh
++++ b/run.sh
+@@ -10,7 +10,7 @@ DEFAULT_ROOT_DIR=`pwd`
+ KEEP_INTERMEDIARY_FILES_BOOL="false"
+ GPUONLY_BOOL="false"
+ PARALELLIZE_LOOPS_BOOL="true"
+-PRAGMA_STANDARD_INT=1
++PRAGMA_STANDARD_INT=0
+ POINTER_DESAMBIGUATION_BOOL="true"
+ MEMORY_COALESCING_BOOL="true"
+ MINIMIZE_ALIASING_BOOL="true"

@@ -1,0 +1,40 @@
+#!/bin/bash
+cd src && \
+cp common/*.h sys/*.h BT/ && \
+cp common/*.h sys/*.h CG/ && \
+cp common/*.h sys/*.h EP/ && \
+cp common/*.h sys/*.h FT/ && \
+cp common/*.h sys/*.h LU/ && \
+cp common/*.h sys/*.h MG/ && \
+cp common/*.h sys/*.h SP/ && \
+sed "s/#include <openacc.h>/\/\/#include <openacc.h>/g" -i BT/* && \
+sed "s/#include <openacc.h>/\/\/#include <openacc.h>/g" -i CG/* && \
+sed "s/#include <openacc.h>/\/\/#include <openacc.h>/g" -i EP/* && \
+sed "s/#include <openacc.h>/\/\/#include <openacc.h>/g" -i FT/* && \
+sed "s/#include <openacc.h>/\/\/#include <openacc.h>/g" -i LU/* && \
+sed "s/#include <openacc.h>/\/\/#include <openacc.h>/g" -i MG/* && \
+sed "s/#include <openacc.h>/\/\/#include <openacc.h>/g" -i SP/* && \
+sed "s/extern/\/*extern*\//g" -i BT/* && \
+sed "s/extern/\/*extern*\//g" -i CG/* && \
+sed "s/extern/\/*extern*\//g" -i EP/* && \
+sed "s/extern/\/*extern*\//g" -i FT/* && \
+sed "s/extern/\/*extern*\//g" -i LU/* && \
+sed "s/extern/\/*extern*\//g" -i MG/* && \
+sed "s/extern/\/*extern*\//g" -i SP/* && \
+cd .. && \
+./run.sh && \
+cd src && \
+sed "s/\/\/#include <openacc.h>/#include <openacc.h>/g" -i BT/* && \
+sed "s/\/\/#include <openacc.h>/#include <openacc.h>/g" -i CG/* && \
+sed "s/\/\/#include <openacc.h>/#include <openacc.h>/g" -i EP/* && \
+sed "s/\/\/#include <openacc.h>/#include <openacc.h>/g" -i FT/* && \
+sed "s/\/\/#include <openacc.h>/#include <openacc.h>/g" -i LU/* && \
+sed "s/\/\/#include <openacc.h>/#include <openacc.h>/g" -i MG/* && \
+sed "s/\/\/#include <openacc.h>/#include <openacc.h>/g" -i SP/* && \
+sed "s/\/\*extern\*\//extern/g" -i BT/* && \
+sed "s/\/\*extern\*\//extern/g" -i CG/* && \
+sed "s/\/\*extern\*\//extern/g" -i EP/* && \
+sed "s/\/\*extern\*\//extern/g" -i FT/* && \
+sed "s/\/\*extern\*\//extern/g" -i LU/* && \
+sed "s/\/\*extern\*\//extern/g" -i MG/* && \
+sed "s/\/\*extern\*\//extern/g" -i SP/*
