@@ -36,7 +36,7 @@ When optimising an application, the tool goes four distinct stages:
 
 2) Data Optimisation --- This stage attempts to find the optimal placement of OpenACC data directives using a genetic algorithm. These directives allow the transfer of data to and from the GPU across many loop parallelisations. The fitness function used is the <fitness_function_script> (taking in a patch to the program as an argument). This fitnesss function will guide the search towards a solution with a lower execution time. 
 
-3)Parameter Optimisation --- This stage searches for optimal parameters for each directive.
+3) Parameter Optimisation --- This stage searches for optimal parameters for each directive.
 
 4) Directive pruning --- This stage iteratively goes through the directives withinthe best patch found from the 'Data Optimisation' stage. For each, it is removed, and if this improves the performance (as determined by the <fitness_function_script>), it is permanently removed from the final patch. If the patch is worse having removed the directive, the directive is re-added before moving onto the next directive.
 
