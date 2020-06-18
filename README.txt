@@ -22,8 +22,7 @@ Once complete the tool may be run it using './run.bsh'
 
 --- Running Experiments ---
 
-To run experiments simply execute 'experiment_run.bsh'. This will download the experiment git repo: 'git@bitbucket.org:BobbyBruce1990/experiment.git' (you must request access to this repo). This repo contains its own README for information.
-
+To run experiments simply execute 'experiment_run.bsh'.
 --- Description of OpenACC-GI's functionality and features ---
 
 This tool contains various components. The following is a high-level overview.
