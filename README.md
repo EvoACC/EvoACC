@@ -4,7 +4,7 @@ To setup the tool please execute 'setup.bsh'
 
 This will compile the tools in 'clang tools' (used by openacc_gi_v3), and then build the openacc_gi-3.0 jar.
  
-You need wget, tar, unzip, cmake, a C++ compilation toolchain, and Maven to use this script or you will encounter errors (they should be noisy enough to fix)
+You need wget, tar, unzip, cmake, a C++ compilation toolchain, CUDA, the PGI complier, and Maven to use this script or you will encounter errors (they should be noisy enough to fix)
 
 Once complete the tool may be run it using './run.bsh'
 
@@ -36,6 +36,8 @@ When optimising an application, the tool goes four distinct stages:
 
 2) Data Optimisation --- This stage attempts to find the optimal placement of OpenACC data directives using a genetic algorithm. These directives allow the transfer of data to and from the GPU across many loop parallelisations. The fitness function used is the <fitness_function_script> (taking in a patch to the program as an argument). This fitnesss function will guide the search towards a solution with a lower execution time. 
 
-3) Directive pruning --- This stage iteratively goes through the directives withinthe best patch found from the 'Data Optimisation' stage. For each, it is removed, and if this improves the performance (as determined by the <fitness_function_script>), it is permanently removed from the final patch. If the patch is worse having removed the directive, the directive is re-added before moving onto the next directive.
+3)Parameter Optimisation --- This stage searches for optimal parameters for each directive.
+
+4) Directive pruning --- This stage iteratively goes through the directives withinthe best patch found from the 'Data Optimisation' stage. For each, it is removed, and if this improves the performance (as determined by the <fitness_function_script>), it is permanently removed from the final patch. If the patch is worse having removed the directive, the directive is re-added before moving onto the next directive.
 
 After all these stages the optimal patch is returned to the user via STDOUT.
