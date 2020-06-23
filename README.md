@@ -1,4 +1,10 @@
---- Setup and running the tool ---
+#EvoACC
+This is an artefact to accompany the "EvoACC: Software Parallelisation through theAutomatic Generation of OpenACC Directives" paper by Justyna Petke and Sandy Brownlee, submitted to the SSBSE 2020 RENE track.
+
+This repository contains: EvoACC source code and experiment on the SNU-NPB benchmarks
+
+
+## Setup and running the tool
 
 To setup the tool please execute 'setup.bsh'
 
@@ -20,11 +26,11 @@ Once complete the tool may be run it using './run.bsh'
 
 <include_file> : Files that should be included to get these files to compile. Note: C/CPP standard library is not included by default.
 
---- Running Experiments ---
+## Running Experiments
 
 To run experiments simply execute 'experiment_run.bsh'.
 
---- Description of OpenACC-GI's functionality and features ---
+## Description of OpenACC-GI's functionality and features ---
 
 This tool contains various components. The following is a high-level overview.
 
