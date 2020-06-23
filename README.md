@@ -1,4 +1,4 @@
-#EvoACC
+# EvoACC
 This is an artefact to accompany the "EvoACC: Software Parallelisation through theAutomatic Generation of OpenACC Directives" paper by Justyna Petke and Sandy Brownlee, submitted to the SSBSE 2020 RENE track.
 
 This repository contains: EvoACC source code and experiment on the SNU-NPB benchmarks
